@@ -6,7 +6,7 @@ import {
 } from 'react-icons/md';
 
 import { useCart } from '../../hooks/useCart';
-// import { formatPrice } from '../../util/format';
+import { formatPrice } from '../../util/format';
 import { Container, ProductTable, Total } from './styles';
 
 interface Product {
@@ -19,16 +19,23 @@ interface Product {
 
 const Cart = (): JSX.Element => {
   const { cart, removeProduct, updateProductAmount } = useCart();
+  const cartFormatted = cart.map(product => ({
+    ...product,
+    priceFormatted: formatPrice(product.price),
+    subTotal: formatPrice(product.price * product.amount)
 
-  // const cartFormatted = cart.map(product => ({
-  //   // TODO
-  // }))
-  // const total =
-  //   formatPrice(
-  //     cart.reduce((sumTotal, product) => {
-  //       // TODO
-  //     }, 0)
-  //   )
+
+  }))
+
+  const total =
+    formatPrice(
+      cart.reduce((sumTotal, product) => {
+        let price = product.amount * product.price
+        let results = price
+
+        return sumTotal + results
+      }, 0)
+    )
 
   function handleProductIncrement(product: Product) {
     const productAmount = product
@@ -65,7 +72,7 @@ const Cart = (): JSX.Element => {
           </tr>
         </thead>
         <tbody>
-          {cart.map(product => (
+          {cartFormatted.map(product => (
             <tr data-testid="product" key={product.id}>
               <td>
                 <img src={product.image} />
@@ -88,7 +95,7 @@ const Cart = (): JSX.Element => {
                     type="text"
                     data-testid="product-amount"
                     readOnly
-                    value={2}
+                    value={product.amount}
                   />
                   <button
                     type="button"
@@ -100,7 +107,7 @@ const Cart = (): JSX.Element => {
                 </div>
               </td>
               <td>
-                <strong>R$ 359,80</strong>
+                <strong>{product.subTotal}</strong>
               </td>
               <td>
                 <button
@@ -120,7 +127,7 @@ const Cart = (): JSX.Element => {
 
         <Total>
           <span>TOTAL</span>
-          <strong>R$ 359,80</strong>
+          <strong>{total}</strong>
         </Total>
       </footer>
     </Container>
