@@ -109,6 +109,9 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
       const stockAmount = stock.data.amount
       const expectedAmount = amount
       const product = currentProduct.find(product => product.id == productId)
+      if(expectedAmount == 0){
+        return
+      }
       if(expectedAmount > stockAmount){
         toast.error('Quantidade solicitada fora de estoque');
         return;
@@ -116,9 +119,11 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
         if (product){
           product.amount = expectedAmount
           setCart(currentProduct)
+          localStorage.setItem('@RocketShoes:cart', JSON.stringify(currentProduct))
+        } else {
+          throw Error();
         }
           }
-    localStorage.setItem('@RocketShoes:cart', JSON.stringify(currentProduct))
     } catch {
       toast.error('Erro na alteração de quantidade do produto');
     }
